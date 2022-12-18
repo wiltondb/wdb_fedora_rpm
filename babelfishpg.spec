@@ -30,6 +30,8 @@ BuildRequires: gcc
 BuildRequires: g++
 BuildRequires: java-devel
 BuildRequires: make
+BuildRequires: wget
+
 BuildRequires: postgresql-private-devel = %{version_postgres_epoch}:%{version_postgres}
 BuildRequires: postgresql-server-devel = %{version_postgres_epoch}:%{version_postgres}
 
