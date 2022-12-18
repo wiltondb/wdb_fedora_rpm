@@ -29,6 +29,7 @@ BuildRequires: cmake
 BuildRequires: gcc
 BuildRequires: g++
 BuildRequires: java-devel
+BuildRequires: libxml2-devel
 BuildRequires: make
 BuildRequires: wget
 
