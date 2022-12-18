@@ -33,6 +33,7 @@ BuildRequires: g++
 BuildRequires: java-devel
 BuildRequires: libxml2-devel
 BuildRequires: make
+BuildRequires: perl-lib
 BuildRequires: perl(FindBin)
 BuildRequires: wget
 
