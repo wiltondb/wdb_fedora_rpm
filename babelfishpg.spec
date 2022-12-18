@@ -5,7 +5,7 @@ Name: babelfishpg
 Version: BABEL_2_2_0
 %global version_postgres %{version_postgres_major}.%{version_postgres_minor}.%{version}
 %global version_postgresql_modified_for_babelfish %{version}__PG_%{version_postgres_major}_%{version_postgres_minor}
-Release: 1%{?dist}
+Release: 2%{?dist}
 
 Summary: Babelfish extensions for PostgreSQL
 License: PostgreSQL
@@ -129,6 +129,9 @@ cp -p ./contrib/babelfishpg_money/fixeddecimal--1.0.0--1.1.0.sql %{buildroot}%{_
 
 # common
 cp -p ./contrib/babelfishpg_common/babelfishpg_common.so %{buildroot}%{_libdir}/pgsql/
+pushd %{buildroot}%{_libdir}
+    ln -s ./pgsql/babelfishpg_common.so babelfishpg_common.so
+popd
 cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--1.0.0.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--1.0.0--1.1.0.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--1.1.0--1.2.0.sql %{buildroot}%{_datadir}/pgsql/extension/
@@ -168,6 +171,7 @@ cp -p ./contrib/babelfishpg_tsql/babelfishpg_tsql.control %{buildroot}%{_datadir
 
 %files common
 %{_libdir}/pgsql/babelfishpg_common.so
+%{_libdir}/babelfishpg_common.so
 %{_datadir}/pgsql/extension/babelfishpg_common--1.0.0.sql
 %{_datadir}/pgsql/extension/babelfishpg_common--1.0.0--1.1.0.sql
 %{_datadir}/pgsql/extension/babelfishpg_common--1.1.0--1.2.0.sql
