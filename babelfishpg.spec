@@ -25,12 +25,15 @@ Patch4: babelfishpg-encoding-conversion.patch
  
 BuildRequires: antlr4
 BuildRequires: antlr4-cpp-runtime-devel
+BuildRequires: bison
 BuildRequires: cmake
+BuildRequires: flex
 BuildRequires: gcc
 BuildRequires: g++
 BuildRequires: java-devel
 BuildRequires: libxml2-devel
 BuildRequires: make
+BuildRequires: perl(FindBin)
 BuildRequires: wget
 
 BuildRequires: postgresql-private-devel = %{version_postgres_epoch}:%{version_postgres}
