@@ -21,12 +21,14 @@ Source1: %{version_postgresql_modified_for_babelfish}.tar.gz
 Patch1: babelfishpg-antlr-4.10.patch
 Patch2: babelfishpg-antlr-classpath.patch
 Patch3: babelfishpg-cflags.patch
+Patch4: babelfishpg-encoding-conversion.patch
  
 BuildRequires: antlr4
 BuildRequires: antlr4-cpp-runtime-devel
 BuildRequires: cmake
 BuildRequires: gcc
 BuildRequires: g++
+BuildRequires: java-devel
 BuildRequires: make
 BuildRequires: postgresql-private-devel = %{version_postgres_epoch}:%{version_postgres}
 BuildRequires: postgresql-server-devel = %{version_postgres_epoch}:%{version_postgres}
@@ -80,6 +82,7 @@ popd
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 	
 %build
 export cmake=cmake
