@@ -30,7 +30,7 @@ BuildRequires: cmake
 BuildRequires: flex
 BuildRequires: gcc
 BuildRequires: g++
-BuildRequires: java
+BuildRequires: java-devel
 BuildRequires: libxml2-devel
 BuildRequires: make
 BuildRequires: perl-lib
