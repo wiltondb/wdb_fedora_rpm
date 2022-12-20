@@ -5,7 +5,7 @@ Name: babelfishpg
 Version: BABEL_2_2_0
 %global version_postgres %{version_postgres_major}.%{version_postgres_minor}.%{version}
 %global version_postgresql_modified_for_babelfish %{version}__PG_%{version_postgres_major}_%{version_postgres_minor}
-Release: 2%{?dist}
+Release: 3%{?dist}
 
 Summary: Babelfish extensions for PostgreSQL
 License: PostgreSQL
@@ -30,7 +30,7 @@ BuildRequires: cmake
 BuildRequires: flex
 BuildRequires: gcc
 BuildRequires: g++
-BuildRequires: java-devel
+BuildRequires: java
 BuildRequires: libxml2-devel
 BuildRequires: make
 BuildRequires: perl-lib
@@ -112,6 +112,13 @@ make %{?_smp_mflags}
 popd
 
 # tsql
+pushd ./contrib/babelfishpg_tsql/antlr
+export ANTLR4_JAVA_BIN=/usr/lib/jvm/java-17-openjdk/bin/java
+%cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo
+%cmake_build
+ln -s ./redhat-linux-build/antlr4cpp_generated_src
+ln -s ./redhat-linux-build/libantlr_tsql.a
+popd
 pushd ./contrib/babelfishpg_tsql/
 ln -s `pwd`/../babelfishpg_common/babelfishpg_common.so
 make #%{?_smp_mflags}
@@ -200,6 +207,13 @@ cp -p ./contrib/babelfishpg_tsql/babelfishpg_tsql.control %{buildroot}%{_datadir
 %{_datadir}/pgsql/extension/babelfishpg_tsql.control
 
 %changelog
+* Tue Dec 20 2022 Alex Kasko <alex@staticlibs.net> - BABEL_2_2_0-3
+	
+- Use cmake directly when building TSQL module
+
+* Sat Dec 17 2022 Alex Kasko <alex@staticlibs.net> - BABEL_2_2_0-2
+	
+- Full working build
 	
 * Thu Dec 8 2022 Alex Kasko <alex@staticlibs.net> - BABEL_2_2_0-1
 	
