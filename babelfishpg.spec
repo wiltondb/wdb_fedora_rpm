@@ -23,6 +23,7 @@ Patch2: babelfishpg-encoding-conversion.patch
 Patch3: babelfishpg-antlr-classpath.patch
 Patch4: babelfishpg-antlr-4.10.patch
 
+BuildRequires: antlr4
 BuildRequires: antlr4-cpp-runtime-devel
 BuildRequires: bison
 BuildRequires: cmake
