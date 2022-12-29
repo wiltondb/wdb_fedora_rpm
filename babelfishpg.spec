@@ -2,20 +2,20 @@ Name: babelfishpg
 %global version_postgres_epoch 2
 %global version_postgres_major 14
 %global version_postgres_minor 5
-Version: BABEL_2_2_0
+Version: BABEL_2_2_1
 %global version_postgres %{version_postgres_major}.%{version_postgres_minor}.%{version}
 %global version_postgresql_modified_for_babelfish %{version}__PG_%{version_postgres_major}_%{version_postgres_minor}
-Release: 4%{?dist}
+Release: 1%{?dist}
 
 Summary: Babelfish extensions for PostgreSQL
 License: PostgreSQL
 Url: https://babelfishpg.org/
 
 Source0: %{version}.tar.gz
-%global source0_sha512 a8ef0f95166695163edd900ab3592c4a3a4bce2600a9b12ffb2689f075ebc11947e1f6e20cef1c3884e944f7942f7179607cc106d75630d718c6d8d220fa5424
+%global source0_sha512 247d0391c6450b686ece499226fc4d1c6d9c293fbdbe9bb58d34c9f6bbcc611179aa0604dfca4b61f463b5db6299a2df3984045f09a8bb6dde222b82d97bb837
 %global source0_url https://github.com/babelfish-for-postgresql/babelfish_extensions/archive/refs/tags/%{version}.tar.gz
 Source1: %{version_postgresql_modified_for_babelfish}.tar.gz
-%global source1_sha512 82ead048d6e3018062981db79820d72d910c78a1ae0a5a03c10dce49dc6b7d368c464f3a8bcd63b18a91d2cc7e67f530fb64d63a9c56f9408f322ab4ffd0894a
+%global source1_sha512 cf7000b380dbd016e115aa7febbb795cee1d91c514459ed75c1ad8c7d86c05d315f1014bcb1812a30a33eb6264463f1d54606e59c2a9228d02840aa6bb388d34
 %global source1_url https://github.com/babelfish-for-postgresql/postgresql_modified_for_babelfish/archive/refs/tags/%{version_postgresql_modified_for_babelfish}.tar.gz
 	
 Patch1: babelfishpg-cflags.patch
@@ -210,6 +210,9 @@ cp -p ./contrib/babelfishpg_tsql/babelfishpg_tsql.control %{buildroot}%{_datadir
 %{_datadir}/pgsql/extension/babelfishpg_tsql.control
 
 %changelog
+* Thu Dec 29 2022 Alex Kasko <alex@staticlibs.net - BABEL_2_2_1-1
+- Update to BABEL_2_2_1
+
 * Fri Dec 23 2022 Alex Kasko <alex@staticlibs.net - BABEL_2_2_0-4
 - Use utf8cpp instead of codecvt with antlr C++ runtime
 

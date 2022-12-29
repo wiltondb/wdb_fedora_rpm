@@ -3,7 +3,7 @@
 set -e
 set -x
 
-VERSION_BABEL=2_2_0
+VERSION_BABEL=2_2_1
 VERSION_PG=14_5
 
 rm -f ./BABEL_${VERSION_BABEL}.tar.gz
