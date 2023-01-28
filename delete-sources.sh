@@ -3,8 +3,8 @@
 set -e
 set -x
 
-VERSION_BABEL=2_2_1
-VERSION_PG=14_5
+VERSION_BABEL=2_3_0
+VERSION_PG=14_6
 
 rm -f ./BABEL_${VERSION_BABEL}.tar.gz
 touch ./BABEL_${VERSION_BABEL}.tar.gz
