@@ -1,5 +1,46 @@
+--- a/contrib/babelfishpg_tsql/Makefile	2023-01-23 11:35:47.000000000 +0000
++++ b/contrib/babelfishpg_tsql/Makefile	2023-01-30 09:36:07.073466274 +0000
+@@ -68,18 +68,20 @@
+ OBJS += src/pltsql_ruleutils.o
+ OBJS += src/forjson.o
+ 
+-export ANTLR4_JAVA_BIN=java
+ export ANTLR4_RUNTIME_LIB=-lantlr4-runtime
+-export ANTLR4_RUNTIME_INCLUDE_DIR=/usr/local/include/antlr4-runtime
+-export ANTLR4_RUNTIME_LIB_DIR=/usr/local/lib
++export ANTLR4_RUNTIME_INCLUDE_DIR=/usr/include/antlr4-runtime
++export ANTLR4_RUNTIME_LIB_DIR=./
+ OBJS += src/pltsql_bulkcopy.o
+ 
+ PG_CXXFLAGS += -g -Werror
+ PG_CXXFLAGS += -Wno-deprecated -Wno-error=attributes -Wno-suggest-attribute=format # disable some warnings from ANTLR runtime header
+ PG_CXXFLAGS += -Wno-undef -Wall -Wcpp
+ PG_CXXFLAGS += -Wno-register # otherwise C++17 gags on PostgreSQL headers
++# GCC 13 ANTLR headers error:
++# 'virtual bool antlr4::tree::ParseTree::operator==(const antlr4::tree::ParseTree&) const' was hidden
++PG_CXXFLAGS += -Wno-error=overloaded-virtual
+ PG_CXXFLAGS += -I$(ANTLR4_RUNTIME_INCLUDE_DIR)
+-PG_CFLAGS += -g
++PG_CFLAGS += -g -fcommon -Wno-error=format-security
+ PG_CPPFLAGS += -I$(TSQLSRC) -I$(PG_SRC) -DFAULT_INJECTOR
+ 
+ SHLIB_LINK += -L$(ANTLR4_RUNTIME_LIB_DIR) $(ANTLR4_RUNTIME_LIB) -lcrypto -L$(pkglibdir) -l:babelfishpg_common.so
+@@ -159,13 +161,6 @@
+ GEN_KEYWORDLIST_DEPS = $(TOOLSDIR)/gen_keywordlist.pl $(TOOLSDIR)/PerfectHash.pm
+ TSQLSRC = .
+ 
+-antlr/Makefile: antlr/CMakeLists.txt antlr/TSqlLexer.g4 antlr/TSqlLexer.g4
+-	cd antlr && $(cmake) . && cd ..
+-
+-.PHONY: antlr/libantlr_tsql.a  # to allow CMake's make check the build
+-antlr/libantlr_tsql.a: antlr/Makefile
+-	$(MAKE) -C $(@D) all
+-
+ # See notes in src/backend/parser/Makefile about the following two rules
+ src/pl_gram.h: src/pl_gram.c
+ 	touch $@
 --- a/contrib/babelfishpg_tsql/antlr/CMakeLists.txt	2023-01-23 11:35:47.000000000 +0000
-+++ b/contrib/babelfishpg_tsql/antlr/CMakeLists.txt	2023-01-28 19:58:08.778089809 +0000
++++ b/contrib/babelfishpg_tsql/antlr/CMakeLists.txt	2023-01-30 09:35:28.994027479 +0000
 @@ -4,15 +4,16 @@
  list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake-dir)
  
@@ -21,41 +62,3 @@
  include_directories(${MYDIR})
  
  # set variable pointing to the antlr tool that supports C++
---- a/contrib/babelfishpg_tsql/Makefile	2023-01-23 11:35:47.000000000 +0000
-+++ b/contrib/babelfishpg_tsql/Makefile	2023-01-28 19:56:56.919349704 +0000
-@@ -68,10 +68,9 @@
- OBJS += src/pltsql_ruleutils.o
- OBJS += src/forjson.o
- 
--export ANTLR4_JAVA_BIN=java
- export ANTLR4_RUNTIME_LIB=-lantlr4-runtime
--export ANTLR4_RUNTIME_INCLUDE_DIR=/usr/local/include/antlr4-runtime
--export ANTLR4_RUNTIME_LIB_DIR=/usr/local/lib
-+export ANTLR4_RUNTIME_INCLUDE_DIR=/usr/include/antlr4-runtime
-+export ANTLR4_RUNTIME_LIB_DIR=./
- OBJS += src/pltsql_bulkcopy.o
- 
- PG_CXXFLAGS += -g -Werror
-@@ -79,7 +78,7 @@
- PG_CXXFLAGS += -Wno-undef -Wall -Wcpp
- PG_CXXFLAGS += -Wno-register # otherwise C++17 gags on PostgreSQL headers
- PG_CXXFLAGS += -I$(ANTLR4_RUNTIME_INCLUDE_DIR)
--PG_CFLAGS += -g
-+PG_CFLAGS += -g -fcommon -Wno-error=format-security
- PG_CPPFLAGS += -I$(TSQLSRC) -I$(PG_SRC) -DFAULT_INJECTOR
- 
- SHLIB_LINK += -L$(ANTLR4_RUNTIME_LIB_DIR) $(ANTLR4_RUNTIME_LIB) -lcrypto -L$(pkglibdir) -l:babelfishpg_common.so
-@@ -159,13 +158,6 @@
- GEN_KEYWORDLIST_DEPS = $(TOOLSDIR)/gen_keywordlist.pl $(TOOLSDIR)/PerfectHash.pm
- TSQLSRC = .
- 
--antlr/Makefile: antlr/CMakeLists.txt antlr/TSqlLexer.g4 antlr/TSqlLexer.g4
--	cd antlr && $(cmake) . && cd ..
--
--.PHONY: antlr/libantlr_tsql.a  # to allow CMake's make check the build
--antlr/libantlr_tsql.a: antlr/Makefile
--	$(MAKE) -C $(@D) all
--
- # See notes in src/backend/parser/Makefile about the following two rules
- src/pl_gram.h: src/pl_gram.c
- 	touch $@

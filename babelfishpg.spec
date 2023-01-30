@@ -5,7 +5,7 @@ Name: babelfishpg
 Version: BABEL_2_3_0
 %global version_postgres %{version_postgres_major}.%{version_postgres_minor}.%{version}
 %global version_postgresql_modified_for_babelfish %{version}__PG_%{version_postgres_major}_%{version_postgres_minor}
-Release: 1%{?dist}
+Release: 2%{?dist}
 
 Summary: Babelfish extensions for PostgreSQL
 License: PostgreSQL
@@ -214,6 +214,9 @@ cp -p ./contrib/babelfishpg_tsql/babelfishpg_tsql.control %{buildroot}%{_datadir
 %{_datadir}/pgsql/extension/babelfishpg_tsql.control
 
 %changelog
+* Mon Jan 30 2023 Alex Kasko <alex@staticlibs.net - BABEL_2_3_0-2
+- Disable ANTLR headers warning with GCC 13
+
 * Fri Jan 27 2023 Alex Kasko <alex@staticlibs.net - BABEL_2_3_0-1
 - Update to BABEL_2_3_0
 
