@@ -5,17 +5,17 @@ Name: babelfishpg
 Version: BABEL_2_3_0
 %global version_postgres %{version_postgres_major}.%{version_postgres_minor}.%{version}
 %global version_postgresql_modified_for_babelfish %{version}__PG_%{version_postgres_major}_%{version_postgres_minor}
-Release: 2%{?dist}
+Release: 3%{?dist}
 
 Summary: Babelfish extensions for PostgreSQL
 License: PostgreSQL
 Url: https://babelfishpg.org/
 
 Source0: %{version}.tar.gz
-%global source0_sha512 8c864eebcf06ff1fae28fc415393c0b37f4753bdec174bd91392b2f31a2f87656de63d13f72bcbe6ab1ac9c7f55e01802060bd3c8d39c7a75cb4c2a1ca59166a
+%global source0_sha512 08eb0ced2f5c7f2bf09247d6fedcd3c485bf5d974a54a529bd01e47c359730ff425f430d5c4d1a6cef3a7a1f0c7155d7af64897cea1bf309edbb9e59292c60b2
 %global source0_url https://github.com/babelfish-for-postgresql/babelfish_extensions/archive/refs/tags/%{version}.tar.gz
 Source1: %{version_postgresql_modified_for_babelfish}.tar.gz
-%global source1_sha512 6ffda4808a543abeee8e48b6cb6968500cbcc25d004400640bef9543ec16889f7380aed6defc295042038befa1f02d7a71641ababcd56aa55f3bbb8cf0496a62
+%global source1_sha512 b00741c70ec61d4b79e5f64d20d314e66b294cbe31de1b5b0b04fc93746b2a7ea1fa62f062e258d2b1fc15576988f1ee65fb8a17d70e17512237fc070e509fba
 %global source1_url https://github.com/babelfish-for-postgresql/postgresql_modified_for_babelfish/archive/refs/tags/%{version_postgresql_modified_for_babelfish}.tar.gz
 	
 Patch1: babelfishpg-cflags.patch
@@ -214,16 +214,19 @@ cp -p ./contrib/babelfishpg_tsql/babelfishpg_tsql.control %{buildroot}%{_datadir
 %{_datadir}/pgsql/extension/babelfishpg_tsql.control
 
 %changelog
-* Mon Jan 30 2023 Alex Kasko <alex@staticlibs.net - BABEL_2_3_0-2
+* Wed Feb 15 2023 Alex Kasko <alex@staticlibs.net> - BABEL_2_3_0-3
+- Update to the same upstream tag that was re-created on different commit
+
+* Mon Jan 30 2023 Alex Kasko <alex@staticlibs.net> - BABEL_2_3_0-2
 - Disable ANTLR headers warning with GCC 13
 
-* Fri Jan 27 2023 Alex Kasko <alex@staticlibs.net - BABEL_2_3_0-1
+* Fri Jan 27 2023 Alex Kasko <alex@staticlibs.net> - BABEL_2_3_0-1
 - Update to BABEL_2_3_0
 
-* Thu Dec 29 2022 Alex Kasko <alex@staticlibs.net - BABEL_2_2_1-1
+* Thu Dec 29 2022 Alex Kasko <alex@staticlibs.net> - BABEL_2_2_1-1
 - Update to BABEL_2_2_1
 
-* Fri Dec 23 2022 Alex Kasko <alex@staticlibs.net - BABEL_2_2_0-4
+* Fri Dec 23 2022 Alex Kasko <alex@staticlibs.net> - BABEL_2_2_0-4
 - Use utf8cpp instead of codecvt with antlr C++ runtime
 
 * Tue Dec 20 2022 Alex Kasko <alex@staticlibs.net> - BABEL_2_2_0-3
