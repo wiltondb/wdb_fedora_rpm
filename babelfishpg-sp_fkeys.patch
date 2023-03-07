@@ -1,0 +1,14 @@
+diff --git a/contrib/babelfishpg_tsql/sql/babelfishpg_tsql.sql b/contrib/babelfishpg_tsql/sql/babelfishpg_tsql.sql
+index 6679b8e2..2425cd12 100644
+--- a/contrib/babelfishpg_tsql/sql/babelfishpg_tsql.sql
++++ b/contrib/babelfishpg_tsql/sql/babelfishpg_tsql.sql
+@@ -1989,7 +1989,8 @@ BEGIN
+ 	UPDATE_RULE,
+ 	DELETE_RULE,
+ 	FK_NAME,
+-	PK_NAME
++	PK_NAME,
++	cast(7 as smallint) as DEFERRABILITY
+ 	FROM sys.sp_fkeys_view
+ 	WHERE ((SELECT coalesce(@pktable_name,'')) = '' OR LOWER(pktable_name) = LOWER(@pktable_name))
+ 		AND ((SELECT coalesce(@fktable_name,'')) = '' OR LOWER(fktable_name) = LOWER(@fktable_name))

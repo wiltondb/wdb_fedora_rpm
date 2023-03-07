@@ -5,7 +5,7 @@ Name: babelfishpg
 Version: BABEL_2_3_0
 %global version_postgres %{version_postgres_major}.%{version_postgres_minor}.%{version}
 %global version_postgresql_modified_for_babelfish %{version}__PG_%{version_postgres_major}_%{version_postgres_minor}
-Release: 3%{?dist}
+Release: 4%{?dist}
 
 Summary: Babelfish extensions for PostgreSQL
 License: PostgreSQL
@@ -22,6 +22,10 @@ Patch1: babelfishpg-cflags.patch
 Patch2: babelfishpg-antlr-classpath.patch
 Patch3: babelfishpg-antlr-4.10.patch
 Patch4: babelfishpg-tds-format-warning.patch
+# https://github.com/babelfish-for-postgresql/babelfish_extensions/issues/997
+Patch5: babelfishpg-sp_columns.patch
+# https://github.com/babelfish-for-postgresql/babelfish_extensions/issues/1004
+Patch6: babelfishpg-sp_fkeys.patch
 
 BuildRequires: antlr4
 BuildRequires: antlr4-cpp-runtime-devel
@@ -94,6 +98,8 @@ popd
 %patch3 -p1
 %endif
 %patch4 -p1
+%patch5 -p1
+%patch6 -p1
 	
 %build
 export PG_CONFIG=/usr/bin/pg_config
@@ -214,6 +220,9 @@ cp -p ./contrib/babelfishpg_tsql/babelfishpg_tsql.control %{buildroot}%{_datadir
 %{_datadir}/pgsql/extension/babelfishpg_tsql.control
 
 %changelog
+* Tue Mar  7 2023 Alex Kasko <alex@staticlibs.net> - BABEL_2_3_0-4
+- SQL patches for JDBC introspection, clean extension install only
+
 * Wed Feb 15 2023 Alex Kasko <alex@staticlibs.net> - BABEL_2_3_0-3
 - Update to the same upstream tag that was re-created on different commit
 
