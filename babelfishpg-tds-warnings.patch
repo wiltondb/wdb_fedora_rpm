@@ -1,0 +1,12 @@
+diff --git a/contrib/babelfishpg_tds/Makefile b/contrib/babelfishpg_tds/Makefile
+index 8c90db4a..473bc36a 100644
+--- a/contrib/babelfishpg_tds/Makefile
++++ b/contrib/babelfishpg_tds/Makefile
+@@ -11,6 +11,7 @@ TSQL_SRC = ../babelfishpg_tsql
+ 
+ PG_CFLAGS += -Werror
+ PG_CFLAGS += -fstack-protector-strong
++PG_CFLAGS += -Wno-stringop-overflow
+ PG_CPPFLAGS += -I$(TSQL_SRC) -I$(PG_SRC) -I$(tds_top_dir)
+ 
+ # Exclude the following files from the build (sometimes these

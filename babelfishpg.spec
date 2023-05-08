@@ -1,31 +1,32 @@
 Name: babelfishpg
 %global version_postgres_epoch 2
-%global version_postgres_major 14
-%global version_postgres_minor 6
-Version: BABEL_2_3_0
+%global version_postgres_major 15
+%global version_postgres_minor 2
+Version: BABEL_3_1
 %global version_postgres %{version_postgres_major}.%{version_postgres_minor}.%{version}
 %global version_postgresql_modified_for_babelfish %{version}__PG_%{version_postgres_major}_%{version_postgres_minor}
-Release: 4%{?dist}
+%global version_postgresql_modified_for_babelfish_revision daa607875ff7b995ef05753537f97fb5173791db 
+%global version_babelfish_extensions_revision 28aa2081e814033d16d5be6b3e1c6b581f84cbf0
+Release: 1%{?dist}
 
 Summary: Babelfish extensions for PostgreSQL
 License: PostgreSQL
 Url: https://babelfishpg.org/
 
 Source0: %{version}.tar.gz
-%global source0_sha512 08eb0ced2f5c7f2bf09247d6fedcd3c485bf5d974a54a529bd01e47c359730ff425f430d5c4d1a6cef3a7a1f0c7155d7af64897cea1bf309edbb9e59292c60b2
-%global source0_url https://github.com/babelfish-for-postgresql/babelfish_extensions/archive/refs/tags/%{version}.tar.gz
+%global source0_sha512 22b300404f4c309a36d46c26d6b78f453795b964501bf58ebbeb8b15df1bd929e7c4e8824989913836bc4471345ae021dbdb14482429f495ea47a6dbf0c22465
+%global source0_url https://github.com/babelfish-for-postgresql/babelfish_extensions/archive/%{version_babelfish_extensions_revision}.tar.gz
 Source1: %{version_postgresql_modified_for_babelfish}.tar.gz
-%global source1_sha512 b00741c70ec61d4b79e5f64d20d314e66b294cbe31de1b5b0b04fc93746b2a7ea1fa62f062e258d2b1fc15576988f1ee65fb8a17d70e17512237fc070e509fba
-%global source1_url https://github.com/babelfish-for-postgresql/postgresql_modified_for_babelfish/archive/refs/tags/%{version_postgresql_modified_for_babelfish}.tar.gz
+%global source1_sha512 d5661d536c9aacb76c5c2886f60c5dc2b00b1ddfb32f7becf3afc8159205d35701bfb4a716971a50ed768d83c69bea8d53342b2b57f39adf549b1288a32ca664
+%global source1_url https://github.com/babelfish-for-postgresql/postgresql_modified_for_babelfish/archive/%{version_postgresql_modified_for_babelfish_revision}.tar.gz
 	
 Patch1: babelfishpg-cflags.patch
 Patch2: babelfishpg-antlr-classpath.patch
 Patch3: babelfishpg-antlr-4.10.patch
-Patch4: babelfishpg-tds-format-warning.patch
+Patch4: babelfishpg-tds-warnings.patch
 # https://github.com/babelfish-for-postgresql/babelfish_extensions/issues/997
 Patch5: babelfishpg-sp_columns.patch
-# https://github.com/babelfish-for-postgresql/babelfish_extensions/issues/1004
-Patch6: babelfishpg-sp_fkeys.patch
+Patch6: babelfishpg-escape-hatch-type.patch
 
 BuildRequires: antlr4
 BuildRequires: antlr4-cpp-runtime-devel
@@ -80,17 +81,17 @@ Supports Transact-SQL (T-SQL) language.
 pushd %{_sourcedir}
 if [ ! -s %{SOURCE0} ] ; then
 	rm %{SOURCE0}
-	wget -nv %{source0_url}
+	wget -nv %{source0_url} -O $(basename %{SOURCE0})
 fi
 echo "%{source0_sha512}  $(basename %{SOURCE0})" | sha512sum -c
 if [ ! -s %{SOURCE1} ] ; then
 	rm %{SOURCE1}
-	wget -nv %{source1_url}
+	wget -nv %{source1_url} -O $(basename %{SOURCE1})
 fi
 echo "%{source1_sha512}  $(basename %{SOURCE1})" | sha512sum -c
 popd
 
-%setup -q -a 1 -n babelfish_extensions-%{version}
+%setup -q -a 1 -n babelfish_extensions-%{version_babelfish_extensions_revision}
 
 %patch1 -p1
 %patch2 -p1
@@ -100,10 +101,10 @@ popd
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
-	
+
 %build
 export PG_CONFIG=/usr/bin/pg_config
-export PG_SRC=`pwd`/postgresql_modified_for_babelfish-%{version_postgresql_modified_for_babelfish}
+export PG_SRC=`pwd`/postgresql_modified_for_babelfish-%{version_postgresql_modified_for_babelfish_revision}
 
 # money
 pushd ./contrib/babelfishpg_money/
@@ -156,7 +157,11 @@ cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--1.2.1--2.0.0.sql %{bu
 cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--2.0.0--2.1.0.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--2.1.0--2.2.0.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--2.2.0--2.3.0.sql %{buildroot}%{_datadir}/pgsql/extension/
-cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--2.3.0.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--2.3.0--2.4.0.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--2.3.0--3.0.0.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--2.4.0--3.0.0.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--3.0.0--3.1.0.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--3.1.0.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_common/babelfishpg_common.control %{buildroot}%{_datadir}/pgsql/extension/
 
 # tds
@@ -174,7 +179,11 @@ cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--1.2.1--2.0.0.sql %{buildr
 cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--2.0.0--2.1.0.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--2.1.0--2.2.0.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--2.2.0--2.3.0.sql %{buildroot}%{_datadir}/pgsql/extension/
-cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--2.3.0.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--2.3.0--2.4.0.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--2.3.0--3.0.0.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--2.4.0--3.0.0.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--3.0.0--3.1.0.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--3.1.0.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_tsql/babelfishpg_tsql.control %{buildroot}%{_datadir}/pgsql/extension/
 
 %files
@@ -198,7 +207,11 @@ cp -p ./contrib/babelfishpg_tsql/babelfishpg_tsql.control %{buildroot}%{_datadir
 %{_datadir}/pgsql/extension/babelfishpg_common--2.0.0--2.1.0.sql
 %{_datadir}/pgsql/extension/babelfishpg_common--2.1.0--2.2.0.sql
 %{_datadir}/pgsql/extension/babelfishpg_common--2.2.0--2.3.0.sql
-%{_datadir}/pgsql/extension/babelfishpg_common--2.3.0.sql
+%{_datadir}/pgsql/extension/babelfishpg_common--2.3.0--2.4.0.sql
+%{_datadir}/pgsql/extension/babelfishpg_common--2.3.0--3.0.0.sql
+%{_datadir}/pgsql/extension/babelfishpg_common--2.4.0--3.0.0.sql
+%{_datadir}/pgsql/extension/babelfishpg_common--3.0.0--3.1.0.sql
+%{_datadir}/pgsql/extension/babelfishpg_common--3.1.0.sql
 %{_datadir}/pgsql/extension/babelfishpg_common.control
 
 %files tds
@@ -216,10 +229,17 @@ cp -p ./contrib/babelfishpg_tsql/babelfishpg_tsql.control %{buildroot}%{_datadir
 %{_datadir}/pgsql/extension/babelfishpg_tsql--2.0.0--2.1.0.sql
 %{_datadir}/pgsql/extension/babelfishpg_tsql--2.1.0--2.2.0.sql
 %{_datadir}/pgsql/extension/babelfishpg_tsql--2.2.0--2.3.0.sql
-%{_datadir}/pgsql/extension/babelfishpg_tsql--2.3.0.sql
+%{_datadir}/pgsql/extension/babelfishpg_tsql--2.3.0--2.4.0.sql
+%{_datadir}/pgsql/extension/babelfishpg_tsql--2.3.0--3.0.0.sql
+%{_datadir}/pgsql/extension/babelfishpg_tsql--2.4.0--3.0.0.sql
+%{_datadir}/pgsql/extension/babelfishpg_tsql--3.0.0--3.1.0.sql
+%{_datadir}/pgsql/extension/babelfishpg_tsql--3.1.0.sql
 %{_datadir}/pgsql/extension/babelfishpg_tsql.control
 
 %changelog
+* Mon May  8 2023 Alex Kasko <alex@staticlibs.net> - BABEL_3_1-1
+- Update to BABEL_3_1_STABLE (28aa208)
+
 * Tue Mar  7 2023 Alex Kasko <alex@staticlibs.net> - BABEL_2_3_0-4
 - SQL patches for JDBC introspection, clean extension install only
 
