@@ -19,7 +19,7 @@
  PG_CXXFLAGS += -I$(ANTLR4_RUNTIME_INCLUDE_DIR)
 +# GCC 13 ANTLR headers error:
 +# 'virtual bool antlr4::tree::ParseTree::operator==(const antlr4::tree::ParseTree&) const' was hidden
-+PG_CXXFLAGS += -Wno-error=overloaded-virtual
++PG_CXXFLAGS += -Wno-error=overloaded-virtual -DUSE_UTF8_INSTEAD_OF_CODECVT
  PG_CFLAGS += -g -Werror
  PG_CFLAGS += -fstack-protector-strong
 +PG_CFLAGS += -fcommon -Wno-error=format-security -Wno-error=maybe-uninitialized -Wno-error=infinite-recursion

@@ -7,7 +7,7 @@ Version: BABEL_3_1
 %global version_postgresql_modified_for_babelfish %{version}__PG_%{version_postgres_major}_%{version_postgres_minor}
 %global version_postgresql_modified_for_babelfish_revision daa607875ff7b995ef05753537f97fb5173791db 
 %global version_babelfish_extensions_revision 28aa2081e814033d16d5be6b3e1c6b581f84cbf0
-Release: 1%{?dist}
+Release: 2%{?dist}
 
 Summary: Babelfish extensions for PostgreSQL
 License: PostgreSQL
@@ -237,6 +237,9 @@ cp -p ./contrib/babelfishpg_tsql/babelfishpg_tsql.control %{buildroot}%{_datadir
 %{_datadir}/pgsql/extension/babelfishpg_tsql.control
 
 %changelog
+* Mon May  9 2023 Alex Kasko <alex@staticlibs.net> - BABEL_3_1-2
+- UTF8-CPP usage fix with ANTLR
+
 * Mon May  8 2023 Alex Kasko <alex@staticlibs.net> - BABEL_3_1-1
 - Update to BABEL_3_1_STABLE (28aa208)
 
