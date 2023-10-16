@@ -1,33 +1,26 @@
-Name: babelfishpg
-%global version_postgres_epoch 2
+Name: wiltondb
+%global version_postgres_epoch 1
 %global version_postgres_major 15
-%global version_postgres_minor 3
-Version: BABEL_3_2
-%global version_postgres %{version_postgres_major}.%{version_postgres_minor}.%{version}
-%global version_postgresql_modified_for_babelfish %{version}__PG_%{version_postgres_major}_%{version_postgres_minor}
-%global version_postgresql_modified_for_babelfish_revision 9c4b78157a623a82f81f74f2e29c6b78bb3c9937
-%global version_babelfish_extensions_revision c96f3c85d4a139e641fa88547df774241c616c23
+%global version_postgres_minor 4
+%global version_wiltondb 3.3
+%global version_wiltondb_pg_release 2
+%global version_wiltondb_bbf_release 2
+%global version_orig_tarball_package 1
+%global version_postgres %{version_postgres_epoch}:%{version_postgres_major}.%{version_postgres_minor}.wiltondb%{version_wiltondb}_%{version_wiltondb_pg_release}
+Version: %{version_wiltondb}_%{version_wiltondb_pg_release}_%{version_wiltondb_bbf_release}
 Release: 1%{?dist}
 
-Summary: Babelfish extensions for PostgreSQL
+Summary: Wilton DB build of Babelfish extensions for PostgreSQL
 License: PostgreSQL
-Url: https://babelfishpg.org/
+Url: https://wiltondb.com/
 
-Source0: %{version}.tar.gz
-%global source0_sha512 375034baa2ecd0b71695c647d7a6f4179251b795821a1127303a64a31d88e19f2777bc19dd4db08e84ad4702199d19281c6241854dac3468fa47397ed1348b53
-%global source0_url https://github.com/babelfish-for-postgresql/babelfish_extensions/archive/%{version_babelfish_extensions_revision}.tar.gz
-Source1: %{version_postgresql_modified_for_babelfish}.tar.gz
-%global source1_sha512 55cde0eb23c1a29fddff8e7236e598f9193b575c107b6eed74f8c6a7ecde923a92d6db14260f567eabb8e64a0bfc3839546ab44b52e074f17a67aaa11d509dce
-%global source1_url https://github.com/babelfish-for-postgresql/postgresql_modified_for_babelfish/archive/%{version_postgresql_modified_for_babelfish_revision}.tar.gz
+%global source0_filename wiltondb_%{version_wiltondb}-%{version_wiltondb_pg_release}-%{version_wiltondb_bbf_release}.orig.tar.xz
+%global source0_dirname wiltondb-%{version_wiltondb}-%{version_wiltondb_pg_release}-%{version_wiltondb_bbf_release}
+%global source0_sha512 5fadd0908255b0e3f35ddb992db0bdf13f7d381bc763a4f8173f1fba0c9fa151848964dbbbf57192d69d2f7d407cc0dc8e49112a539c48ddd5f1b1ef8000d822
+%global source0_package %{version_wiltondb}-%{version_wiltondb_pg_release}-%{version_wiltondb_bbf_release}-%{version_orig_tarball_package}~focal
+%global source0_url https://launchpad.net/~wiltondb/+archive/ubuntu/wiltondb/+sourcefiles/wiltondb/%{source0_package}/%{source0_filename}
+Source0: %{source0_filename}
 	
-Patch1: babelfishpg-cflags.patch
-Patch2: babelfishpg-antlr-classpath.patch
-Patch3: babelfishpg-antlr-4.10.patch
-Patch4: babelfishpg-tds-warnings.patch
-# https://github.com/babelfish-for-postgresql/babelfish_extensions/issues/997
-Patch5: babelfishpg-sp_columns.patch
-Patch6: babelfishpg-escape-hatch-type.patch
-
 BuildRequires: antlr4
 BuildRequires: antlr4-cpp-runtime-devel
 BuildRequires: bison
@@ -44,18 +37,18 @@ BuildRequires: perl(FindBin)
 BuildRequires: utf8cpp-devel
 BuildRequires: wget
 
-BuildRequires: postgresql-private-devel = %{version_postgres_epoch}:%{version_postgres}
-BuildRequires: postgresql-server-devel = %{version_postgres_epoch}:%{version_postgres}
+BuildRequires: postgresql-private-devel = %{version_postgres}
+BuildRequires: postgresql-server-devel = %{version_postgres}
 
-Requires: postgresql-server%{?_isa} = %{version_postgres_epoch}:%{version_postgres}
-Requires: postgresql-contrib%{?_isa} = %{version_postgres_epoch}:%{version_postgres}
+Requires: postgresql-server%{?_isa} = %{version_postgres}
+Requires: postgresql-contrib%{?_isa} = %{version_postgres}
 Requires: %{name}-money%{?_isa} = %{version}-%{release}
 Requires: %{name}-common%{?_isa} = %{version}-%{release}
 Requires: %{name}-tds%{?_isa} = %{version}-%{release}
 Requires: %{name}-tsql%{?_isa} = %{version}-%{release}
  
 %description
-Babelfish extensions add additional syntax, functions, data types, and more to PostgreSQL to help in the migration from SQL Server.
+WiltonDB a set of Babelfish extensions to provide the capability for PostgreSQL to understand queries from applications written for Microsoft SQL Server. WiltonDB understands the SQL Server wire-protocol and T-SQL, the Microsoft SQL Server query language.
 
 %package money
 Summary: Supports the money type in MSSQL
@@ -84,27 +77,16 @@ if [ ! -s %{SOURCE0} ] ; then
 	wget -nv %{source0_url} -O $(basename %{SOURCE0})
 fi
 echo "%{source0_sha512}  $(basename %{SOURCE0})" | sha512sum -c
-if [ ! -s %{SOURCE1} ] ; then
-	rm %{SOURCE1}
-	wget -nv %{source1_url} -O $(basename %{SOURCE1})
-fi
-echo "%{source1_sha512}  $(basename %{SOURCE1})" | sha512sum -c
 popd
 
-%setup -q -a 1 -n babelfish_extensions-%{version_babelfish_extensions_revision}
-
-%patch1 -p1
-%patch2 -p1
-%if ! 0%{?fc36}
-%patch3 -p1
-%endif
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
+%setup -q -n %{source0_dirname}
 
 %build
 export PG_CONFIG=/usr/bin/pg_config
-export PG_SRC=`pwd`/postgresql_modified_for_babelfish-%{version_postgresql_modified_for_babelfish_revision}
+export PG_SRC=`pwd`/postgresql_modified_for_babelfish
+export ANTLR4_JAVA_BIN=/usr/bin/java
+export ANTLR_CLASSPATH=/usr/share/java/antlr4/antlr4.jar:/usr/share/java/antlr4/antlr4-runtime.jar:/usr/share/java/antlr3-runtime.jar:/usr/share/java/stringtemplate4/ST4.jar
+export CXXSTANDARD=17
 
 # money
 pushd ./contrib/babelfishpg_money/
@@ -122,15 +104,7 @@ make %{?_smp_mflags}
 popd
 
 # tsql
-pushd ./contrib/babelfishpg_tsql/antlr
-export ANTLR4_JAVA_BIN=/usr/bin/java
-%cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo
-%cmake_build
-ln -s ./redhat-linux-build/antlr4cpp_generated_src
-ln -s ./redhat-linux-build/libantlr_tsql.a
-popd
 pushd ./contrib/babelfishpg_tsql/
-ln -s `pwd`/../babelfishpg_common/babelfishpg_common.so
 make #%{?_smp_mflags}
 popd
 
@@ -146,9 +120,6 @@ cp -p ./contrib/babelfishpg_money/fixeddecimal--1.0.0--1.1.0.sql %{buildroot}%{_
 
 # common
 cp -p ./contrib/babelfishpg_common/babelfishpg_common.so %{buildroot}%{_libdir}/pgsql/
-pushd %{buildroot}%{_libdir}
-    ln -s ./pgsql/babelfishpg_common.so babelfishpg_common.so
-popd
 cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--1.0.0.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--1.0.0--1.1.0.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--1.1.0--1.2.0.sql %{buildroot}%{_datadir}/pgsql/extension/
@@ -160,9 +131,11 @@ cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--2.2.0--2.3.0.sql %{bu
 cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--2.3.0--2.4.0.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--2.3.0--3.0.0.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--2.4.0--3.0.0.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--2.5.0--3.0.0.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--3.0.0--3.1.0.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--3.1.0--3.2.0.sql %{buildroot}%{_datadir}/pgsql/extension/
-cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--3.2.0.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--3.1.0--3.3.0.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--3.3.0.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_common/babelfishpg_common.control %{buildroot}%{_datadir}/pgsql/extension/
 
 # tds
@@ -183,9 +156,12 @@ cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--2.2.0--2.3.0.sql %{buildr
 cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--2.3.0--2.4.0.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--2.3.0--3.0.0.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--2.4.0--3.0.0.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--2.5.0--3.0.0.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--2.6.0--3.0.0.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--3.0.0--3.1.0.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--3.1.0--3.2.0.sql %{buildroot}%{_datadir}/pgsql/extension/
-cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--3.2.0.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--3.2.0--3.3.0.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--3.3.0.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_tsql/babelfishpg_tsql.control %{buildroot}%{_datadir}/pgsql/extension/
 
 %files
@@ -200,7 +176,6 @@ cp -p ./contrib/babelfishpg_tsql/babelfishpg_tsql.control %{buildroot}%{_datadir
 
 %files common
 %{_libdir}/pgsql/babelfishpg_common.so
-%{_libdir}/babelfishpg_common.so
 %{_datadir}/pgsql/extension/babelfishpg_common--1.0.0.sql
 %{_datadir}/pgsql/extension/babelfishpg_common--1.0.0--1.1.0.sql
 %{_datadir}/pgsql/extension/babelfishpg_common--1.1.0--1.2.0.sql
@@ -212,9 +187,11 @@ cp -p ./contrib/babelfishpg_tsql/babelfishpg_tsql.control %{buildroot}%{_datadir
 %{_datadir}/pgsql/extension/babelfishpg_common--2.3.0--2.4.0.sql
 %{_datadir}/pgsql/extension/babelfishpg_common--2.3.0--3.0.0.sql
 %{_datadir}/pgsql/extension/babelfishpg_common--2.4.0--3.0.0.sql
+%{_datadir}/pgsql/extension/babelfishpg_common--2.5.0--3.0.0.sql
 %{_datadir}/pgsql/extension/babelfishpg_common--3.0.0--3.1.0.sql
 %{_datadir}/pgsql/extension/babelfishpg_common--3.1.0--3.2.0.sql
-%{_datadir}/pgsql/extension/babelfishpg_common--3.2.0.sql
+%{_datadir}/pgsql/extension/babelfishpg_common--3.1.0--3.3.0.sql
+%{_datadir}/pgsql/extension/babelfishpg_common--3.3.0.sql
 %{_datadir}/pgsql/extension/babelfishpg_common.control
 
 %files tds
@@ -235,12 +212,18 @@ cp -p ./contrib/babelfishpg_tsql/babelfishpg_tsql.control %{buildroot}%{_datadir
 %{_datadir}/pgsql/extension/babelfishpg_tsql--2.3.0--2.4.0.sql
 %{_datadir}/pgsql/extension/babelfishpg_tsql--2.3.0--3.0.0.sql
 %{_datadir}/pgsql/extension/babelfishpg_tsql--2.4.0--3.0.0.sql
+%{_datadir}/pgsql/extension/babelfishpg_tsql--2.5.0--3.0.0.sql
+%{_datadir}/pgsql/extension/babelfishpg_tsql--2.6.0--3.0.0.sql
 %{_datadir}/pgsql/extension/babelfishpg_tsql--3.0.0--3.1.0.sql
 %{_datadir}/pgsql/extension/babelfishpg_tsql--3.1.0--3.2.0.sql
-%{_datadir}/pgsql/extension/babelfishpg_tsql--3.2.0.sql
+%{_datadir}/pgsql/extension/babelfishpg_tsql--3.2.0--3.3.0.sql
+%{_datadir}/pgsql/extension/babelfishpg_tsql--3.3.0.sql
 %{_datadir}/pgsql/extension/babelfishpg_tsql.control
 
 %changelog
+* Mon Oct 16 2023 WiltonDB Software <info@wiltondb.com> - 3.3_2_2-1
+- Wiltondb3.3 initial build.
+
 * Fri Jun 30 2023 Alex Kasko <alex@staticlibs.net> - BABEL_3_2-1
 - Update to BABEL_3_2_STABLE (c96f3c8)
 
