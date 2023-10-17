@@ -4,7 +4,7 @@ Name: wiltondb
 %global version_postgres_minor 4
 %global version_wiltondb 3.3
 %global version_wiltondb_pg_release 2
-%global version_wiltondb_bbf_release 2
+%global version_wiltondb_bbf_release 3
 %global version_orig_tarball_package 1
 %global version_postgres %{version_postgres_epoch}:%{version_postgres_major}.%{version_postgres_minor}.wiltondb%{version_wiltondb}_%{version_wiltondb_pg_release}
 Version: %{version_wiltondb}_%{version_wiltondb_pg_release}_%{version_wiltondb_bbf_release}
@@ -16,7 +16,7 @@ Url: https://wiltondb.com/
 
 %global source0_filename wiltondb_%{version_wiltondb}-%{version_wiltondb_pg_release}-%{version_wiltondb_bbf_release}.orig.tar.xz
 %global source0_dirname wiltondb-%{version_wiltondb}-%{version_wiltondb_pg_release}-%{version_wiltondb_bbf_release}
-%global source0_sha512 5fadd0908255b0e3f35ddb992db0bdf13f7d381bc763a4f8173f1fba0c9fa151848964dbbbf57192d69d2f7d407cc0dc8e49112a539c48ddd5f1b1ef8000d822
+%global source0_sha512 28d036904dcb253056f96c51278befd782df2a5e75a00064139357afd59f4b982a64fc5ac96f7b3c67f90852f17d9c62a0412833add49a17b8276e89d6aa89a6
 %global source0_package %{version_wiltondb}-%{version_wiltondb_pg_release}-%{version_wiltondb_bbf_release}-%{version_orig_tarball_package}~focal
 %global source0_url https://launchpad.net/~wiltondb/+archive/ubuntu/wiltondb/+sourcefiles/wiltondb/%{source0_package}/%{source0_filename}
 Source0: %{source0_filename}
@@ -28,7 +28,7 @@ BuildRequires: cmake
 BuildRequires: flex
 BuildRequires: gcc
 BuildRequires: gcc-c++
-BuildRequires: java-devel
+BuildRequires: java
 BuildRequires: libxml2-devel
 BuildRequires: make
 BuildRequires: perl-lib
@@ -40,34 +40,42 @@ BuildRequires: wget
 BuildRequires: postgresql-private-devel = %{version_postgres}
 BuildRequires: postgresql-server-devel = %{version_postgres}
 
-Requires: postgresql-server%{?_isa} = %{version_postgres}
-Requires: postgresql-contrib%{?_isa} = %{version_postgres}
-Requires: %{name}-money%{?_isa} = %{version}-%{release}
-Requires: %{name}-common%{?_isa} = %{version}-%{release}
-Requires: %{name}-tds%{?_isa} = %{version}-%{release}
-Requires: %{name}-tsql%{?_isa} = %{version}-%{release}
+Requires: babelfishpg-money%{?_isa} = %{version}-%{release}
+Requires: babelfishpg-common%{?_isa} = %{version}-%{release}
+Requires: babelfishpg-tds%{?_isa} = %{version}-%{release}
+Requires: babelfishpg-tsql%{?_isa} = %{version}-%{release}
  
 %description
 WiltonDB a set of Babelfish extensions to provide the capability for PostgreSQL to understand queries from applications written for Microsoft SQL Server. WiltonDB understands the SQL Server wire-protocol and T-SQL, the Microsoft SQL Server query language.
 
-%package money
+%package -n babelfishpg-money
 Summary: Supports the money type in MSSQL
-%description money
+Requires: postgresql-server%{?_isa} = %{version_postgres}
+Requires: postgresql-contrib%{?_isa} = %{version_postgres}
+%description -n babelfishpg-money
 This is a variation of the opensource fixeddecimal extension. FixedDecimal is a fixed precision decimal type which provides a subset of the features of PostgreSQL's builtin NUMERIC type, but with vastly increased performance. Fixeddecimal is targeted to cases where performance and disk space are a critical.
 
-%package common
+%package -n babelfishpg-common
 Summary: Supports the various datatypes in MSSQL
-%description common
+Requires: postgresql-server%{?_isa} = %{version_postgres}
+Requires: postgresql-contrib%{?_isa} = %{version_postgres}
+Requires: babelfishpg-money%{?_isa} = %{version}-%{release}
+%description -n babelfishpg-common
 Supports NUMERIC, VARBINARY and other datatypes.
 
-%package tds
+%package -n babelfishpg-tds
 Summary: Supports the TDS connection
-%description tds
+Requires: postgresql-server%{?_isa} = %{version_postgres}
+Requires: postgresql-contrib%{?_isa} = %{version_postgres}
+%description -n babelfishpg-tds
 Supports Tabular Data Stream (TDS) protocol.
 
-%package tsql
+%package -n babelfishpg-tsql
 Summary: Supports the T-SQL language
-%description tsql
+Requires: postgresql-server%{?_isa} = %{version_postgres}
+Requires: postgresql-contrib%{?_isa} = %{version_postgres}
+Requires: babelfishpg-common%{?_isa} = %{version}-%{release}
+%description -n babelfishpg-tsql
 Supports Transact-SQL (T-SQL) language.
 
 %prep
@@ -168,13 +176,13 @@ cp -p ./contrib/babelfishpg_tsql/babelfishpg_tsql.control %{buildroot}%{_datadir
 %doc README.md
 %license LICENSE.PostgreSQL
  
-%files money
+%files -n babelfishpg-money
 %{_libdir}/pgsql/babelfishpg_money.so
 %{_datadir}/pgsql/extension/babelfishpg_money--1.1.0.sql
 %{_datadir}/pgsql/extension/babelfishpg_money.control
 %{_datadir}/pgsql/extension/fixeddecimal--1.0.0--1.1.0.sql
 
-%files common
+%files -n babelfishpg-common
 %{_libdir}/pgsql/babelfishpg_common.so
 %{_datadir}/pgsql/extension/babelfishpg_common--1.0.0.sql
 %{_datadir}/pgsql/extension/babelfishpg_common--1.0.0--1.1.0.sql
@@ -194,12 +202,12 @@ cp -p ./contrib/babelfishpg_tsql/babelfishpg_tsql.control %{buildroot}%{_datadir
 %{_datadir}/pgsql/extension/babelfishpg_common--3.3.0.sql
 %{_datadir}/pgsql/extension/babelfishpg_common.control
 
-%files tds
+%files -n babelfishpg-tds
 %{_libdir}/pgsql/babelfishpg_tds.so
 %{_datadir}/pgsql/extension/babelfishpg_tds--1.0.0.sql
 %{_datadir}/pgsql/extension/babelfishpg_tds.control
 
-%files tsql
+%files -n babelfishpg-tsql
 %{_libdir}/pgsql/babelfishpg_tsql.so
 %{_datadir}/pgsql/extension/babelfishpg_tsql--1.0.0.sql
 %{_datadir}/pgsql/extension/babelfishpg_tsql--1.0.0--1.1.0.sql
@@ -221,6 +229,10 @@ cp -p ./contrib/babelfishpg_tsql/babelfishpg_tsql.control %{buildroot}%{_datadir
 %{_datadir}/pgsql/extension/babelfishpg_tsql.control
 
 %changelog
+* Tue Oct 17 2023 WiltonDB Software <info@wiltondb.com> - 3.3_2_3-1
+- Update to wiltondb3.3-2-3
+- Subpackages renamed
+
 * Mon Oct 16 2023 WiltonDB Software <info@wiltondb.com> - 3.3_2_2-1
 - Wiltondb3.3 initial build.
 
