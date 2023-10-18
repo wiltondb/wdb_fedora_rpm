@@ -8,7 +8,7 @@ Name: wiltondb
 %global version_orig_tarball_package 1
 %global version_postgres %{version_postgres_epoch}:%{version_postgres_major}.%{version_postgres_minor}.wiltondb%{version_wiltondb}_%{version_wiltondb_pg_release}
 Version: %{version_wiltondb}_%{version_wiltondb_pg_release}_%{version_wiltondb_bbf_release}
-Release: 2%{?dist}
+Release: 3%{?dist}
 
 Summary: Wilton DB build of Babelfish extensions for PostgreSQL
 License: PostgreSQL
@@ -234,6 +234,9 @@ cp -p ./contrib/babelfishpg_tsql/babelfishpg_tsql.control %{buildroot}%{_datadir
 %{_datadir}/pgsql/extension/babelfishpg_tsql.control
 
 %changelog
+* Wed Oct 18 2023 WiltonDB Software <info@wiltondb.com> - 3.3_2_3-3
+- Setup script EL7 compat
+
 * Wed Oct 18 2023 WiltonDB Software <info@wiltondb.com> - 3.3_2_3-2
 - Setup script added
 

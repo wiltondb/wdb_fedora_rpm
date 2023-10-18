@@ -2,7 +2,6 @@
 #
 # witondb-setup - Initialization operations for WiltonDB
 
-#set -x
 pgdata=/var/lib/pgsql/data
 setup_log=$pgdata/wiltondb_setup.log
 
@@ -45,6 +44,8 @@ if test $? -ne 0; then
     error "postgresql-setup failure"
 fi
 
+umask 0077
+
 info "Initializing WiltonDB"
 
 info_log "Updating pg_hba.conf" >> $setup_log
@@ -62,7 +63,7 @@ openssl req \
     -new \
     -x509 \
     -days 3650 \
-    -noenc \
+    -nodes \
     -text \
     -batch \
     -out server.crt \
