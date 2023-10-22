@@ -4,11 +4,11 @@ Name: wiltondb
 %global version_postgres_minor 4
 %global version_wiltondb 3.3
 %global version_wiltondb_pg_release 2
-%global version_wiltondb_bbf_release 3
+%global version_wiltondb_bbf_release 4
 %global version_orig_tarball_package 1
 %global version_postgres %{version_postgres_epoch}:%{version_postgres_major}.%{version_postgres_minor}.wiltondb%{version_wiltondb}_%{version_wiltondb_pg_release}
 Version: %{version_wiltondb}_%{version_wiltondb_pg_release}_%{version_wiltondb_bbf_release}
-Release: 3%{?dist}
+Release: 1%{?dist}
 
 Summary: Wilton DB build of Babelfish extensions for PostgreSQL
 License: PostgreSQL
@@ -16,7 +16,7 @@ Url: https://wiltondb.com/
 
 %global source0_filename wiltondb_%{version_wiltondb}-%{version_wiltondb_pg_release}-%{version_wiltondb_bbf_release}.orig.tar.xz
 %global source0_dirname wiltondb-%{version_wiltondb}-%{version_wiltondb_pg_release}-%{version_wiltondb_bbf_release}
-%global source0_sha512 28d036904dcb253056f96c51278befd782df2a5e75a00064139357afd59f4b982a64fc5ac96f7b3c67f90852f17d9c62a0412833add49a17b8276e89d6aa89a6
+%global source0_sha512 8def8ac64b420575eca84fad37c89263cd336f40e46679a156ed71d5fc61abc27a86ecaf913e9170dfda45520c8e481bd4a05edb047762e52ae696aa02ef8510
 %global source0_package %{version_wiltondb}-%{version_wiltondb_pg_release}-%{version_wiltondb_bbf_release}-%{version_orig_tarball_package}~focal
 %global source0_url https://launchpad.net/~wiltondb/+archive/ubuntu/wiltondb/+sourcefiles/wiltondb/%{source0_package}/%{source0_filename}
 Source0: %{source0_filename}
@@ -234,6 +234,9 @@ cp -p ./contrib/babelfishpg_tsql/babelfishpg_tsql.control %{buildroot}%{_datadir
 %{_datadir}/pgsql/extension/babelfishpg_tsql.control
 
 %changelog
+* Sun Oct 22 2023 WiltonDB Software <info@wiltondb.com> - 3.3_2_4-1
+- Update to wiltondb3.3-2-4
+
 * Wed Oct 18 2023 WiltonDB Software <info@wiltondb.com> - 3.3_2_3-3
 - Setup script EL7 compat
 
