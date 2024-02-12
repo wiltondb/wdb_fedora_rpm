@@ -3,8 +3,8 @@ Name: wiltondb
 %global version_postgres_major 15
 %global version_postgres_minor 4
 %global version_wiltondb 3.3
-%global version_wiltondb_pg_release 3
-%global version_wiltondb_bbf_release 5
+%global version_wiltondb_pg_release 4
+%global version_wiltondb_bbf_release 6
 %global version_orig_tarball_package 1
 %global version_postgres %{version_postgres_epoch}:%{version_postgres_major}.%{version_postgres_minor}.wiltondb%{version_wiltondb}_%{version_wiltondb_pg_release}
 Version: %{version_wiltondb}_%{version_wiltondb_pg_release}_%{version_wiltondb_bbf_release}
@@ -16,7 +16,7 @@ Url: https://wiltondb.com/
 
 %global source0_filename wiltondb_%{version_wiltondb}-%{version_wiltondb_pg_release}-%{version_wiltondb_bbf_release}.orig.tar.xz
 %global source0_dirname wiltondb-%{version_wiltondb}-%{version_wiltondb_pg_release}-%{version_wiltondb_bbf_release}
-%global source0_sha512 f6a20a6121b9e4b57ab51c2c4f05816f7aa4cb077366c1cfae7e7ae607914f56da09351ad31fbabcd6553a7b11363c48bf7705fa4b662e69fb009dcacb1b131d
+%global source0_sha512 3c023147b903844c605c15c6c9c092f1cc3c6f5208b8757f00d88d698403e7a1819054a51ffaebadc46ea7d8dcf6632985d3fedff4cf7431cc77c8dd669b050e
 %global source0_package %{version_wiltondb}-%{version_wiltondb_pg_release}-%{version_wiltondb_bbf_release}-%{version_orig_tarball_package}~focal
 %global source0_url https://launchpad.net/~wiltondb/+archive/ubuntu/wiltondb/+sourcefiles/wiltondb/%{source0_package}/%{source0_filename}
 Source0: %{source0_filename}
@@ -234,6 +234,9 @@ cp -p ./contrib/babelfishpg_tsql/babelfishpg_tsql.control %{buildroot}%{_datadir
 %{_datadir}/pgsql/extension/babelfishpg_tsql.control
 
 %changelog
+* Mon Feb 12 2024 WiltonDB Software <info@wiltondb.com> - 3.3_4_6-1
+- Update to wiltondb3.3-4-6
+
 * Sun Dec 31 2023 WiltonDB Software <info@wiltondb.com> - 3.3_3_5-1
 - Update to wiltondb3.3-3-5
 
