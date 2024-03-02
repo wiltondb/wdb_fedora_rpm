@@ -4,7 +4,7 @@ Name: wiltondb
 %global version_postgres_minor 4
 %global version_wiltondb 3.3
 %global version_wiltondb_pg_release 4
-%global version_wiltondb_bbf_release 6
+%global version_wiltondb_bbf_release 9
 %global version_orig_tarball_package 1
 %global version_postgres %{version_postgres_epoch}:%{version_postgres_major}.%{version_postgres_minor}.wiltondb%{version_wiltondb}_%{version_wiltondb_pg_release}
 Version: %{version_wiltondb}_%{version_wiltondb_pg_release}_%{version_wiltondb_bbf_release}
@@ -16,7 +16,7 @@ Url: https://wiltondb.com/
 
 %global source0_filename wiltondb_%{version_wiltondb}-%{version_wiltondb_pg_release}-%{version_wiltondb_bbf_release}.orig.tar.xz
 %global source0_dirname wiltondb-%{version_wiltondb}-%{version_wiltondb_pg_release}-%{version_wiltondb_bbf_release}
-%global source0_sha512 3c023147b903844c605c15c6c9c092f1cc3c6f5208b8757f00d88d698403e7a1819054a51ffaebadc46ea7d8dcf6632985d3fedff4cf7431cc77c8dd669b050e
+%global source0_sha512 1cf57e554365b689b9d0b15defc94d49fe8b0a118502c2fd59da0047a4aa48e20b28b5707ba0ff719487713f895aacf7186523563891aa08dd5696ea11099d70
 %global source0_package %{version_wiltondb}-%{version_wiltondb_pg_release}-%{version_wiltondb_bbf_release}-%{version_orig_tarball_package}~focal
 %global source0_url https://launchpad.net/~wiltondb/+archive/ubuntu/wiltondb/+sourcefiles/wiltondb/%{source0_package}/%{source0_filename}
 Source0: %{source0_filename}
@@ -27,6 +27,7 @@ BuildRequires: antlr4-cpp-runtime-devel
 BuildRequires: bison
 BuildRequires: cmake
 BuildRequires: flex
+BuildRequires: freetds-devel
 BuildRequires: gcc
 BuildRequires: gcc-c++
 BuildRequires: java
@@ -45,6 +46,8 @@ Requires: babelfishpg-money%{?_isa} = %{version}-%{release}
 Requires: babelfishpg-common%{?_isa} = %{version}-%{release}
 Requires: babelfishpg-tds%{?_isa} = %{version}-%{release}
 Requires: babelfishpg-tsql%{?_isa} = %{version}-%{release}
+Requires: wiltondb-pg-hint-plan%{?_isa} = %{version}-%{release}
+Requires: wiltondb-tds-fdw%{?_isa} = %{version}-%{release}
  
 %description
 WiltonDB a set of Babelfish extensions to provide the capability for PostgreSQL to understand queries from applications written for Microsoft SQL Server. WiltonDB understands the SQL Server wire-protocol and T-SQL, the Microsoft SQL Server query language.
@@ -78,6 +81,20 @@ Requires: postgresql-contrib%{?_isa} = %{version_postgres}
 Requires: babelfishpg-common%{?_isa} = %{version}-%{release}
 %description -n babelfishpg-tsql
 Supports Transact-SQL (T-SQL) language.
+
+%package -n wiltondb-pg-hint-plan
+Summary: Makes it possible to tweak PostgreSQL execution plans
+Requires: postgresql-server%{?_isa} = %{version_postgres}
+Requires: postgresql-contrib%{?_isa} = %{version_postgres}
+%description -n wiltondb-pg-hint-plan
+Makes it possible to tweak PostgreSQL execution plans using so-called "hints" in SQL comments.
+
+%package -n wiltondb-tds-fdw
+Summary: Foreign data wrapper that can connect to databases that use the TDS protocol
+Requires: postgresql-server%{?_isa} = %{version_postgres}
+Requires: postgresql-contrib%{?_isa} = %{version_postgres}
+%description -n wiltondb-tds-fdw
+Foreign data wrapper that can connect to databases that use the Tabular Data Stream (TDS) protocol, such as Sybase databases and Microsoft SQL server.
 
 %prep
 pushd %{_sourcedir}
@@ -114,6 +131,16 @@ popd
 
 # tsql
 pushd ./contrib/babelfishpg_tsql/
+make #%{?_smp_mflags}
+popd
+
+# pg_hint_plan
+pushd ./extensions/pg_hint_plan/
+make #%{?_smp_mflags}
+popd
+
+# tds_fdw
+pushd ./extensions/tds_fdw/
 make #%{?_smp_mflags}
 popd
 
@@ -173,8 +200,33 @@ cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--2.6.0--3.0.0.sql %{buildr
 cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--3.0.0--3.1.0.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--3.1.0--3.2.0.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--3.2.0--3.3.0.sql %{buildroot}%{_datadir}/pgsql/extension/
-cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--3.3.0.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--3.3.0--3.3.1.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--3.3.1.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_tsql/babelfishpg_tsql.control %{buildroot}%{_datadir}/pgsql/extension/
+
+# pg_hint_plan
+cp -p ./extensions/pg_hint_plan/pg_hint_plan.so %{buildroot}%{_libdir}/pgsql/
+cp -p ./extensions/pg_hint_plan/pg_hint_plan--1.3.0.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./extensions/pg_hint_plan/pg_hint_plan--1.3.0--1.3.1.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./extensions/pg_hint_plan/pg_hint_plan--1.3.1--1.3.2.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./extensions/pg_hint_plan/pg_hint_plan--1.3.2--1.3.3.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./extensions/pg_hint_plan/pg_hint_plan--1.3.3--1.3.4.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./extensions/pg_hint_plan/pg_hint_plan--1.3.5--1.3.6.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./extensions/pg_hint_plan/pg_hint_plan--1.3.4--1.3.5.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./extensions/pg_hint_plan/pg_hint_plan--1.3.6--1.3.7.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./extensions/pg_hint_plan/pg_hint_plan--1.3.7--1.3.8.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./extensions/pg_hint_plan/pg_hint_plan--1.3.8--1.3.9.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./extensions/pg_hint_plan/pg_hint_plan--1.3.9--1.4.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./extensions/pg_hint_plan/pg_hint_plan--1.4--1.4.1.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./extensions/pg_hint_plan/pg_hint_plan--1.4.1--1.4.2.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./extensions/pg_hint_plan/pg_hint_plan--1.4.2--1.5.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./extensions/pg_hint_plan/pg_hint_plan--1.5--1.5.1.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./extensions/pg_hint_plan/pg_hint_plan.control %{buildroot}%{_datadir}/pgsql/extension/
+
+# tds_fdw
+cp -p ./extensions/tds_fdw/tds_fdw.so %{buildroot}%{_libdir}/pgsql/
+cp -p ./extensions/tds_fdw/sql/tds_fdw--2.0.3.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./extensions/tds_fdw/tds_fdw.control %{buildroot}%{_datadir}/pgsql/extension/
 
 %files
 %{_bindir}/wiltondb-setup
@@ -230,10 +282,38 @@ cp -p ./contrib/babelfishpg_tsql/babelfishpg_tsql.control %{buildroot}%{_datadir
 %{_datadir}/pgsql/extension/babelfishpg_tsql--3.0.0--3.1.0.sql
 %{_datadir}/pgsql/extension/babelfishpg_tsql--3.1.0--3.2.0.sql
 %{_datadir}/pgsql/extension/babelfishpg_tsql--3.2.0--3.3.0.sql
-%{_datadir}/pgsql/extension/babelfishpg_tsql--3.3.0.sql
+%{_datadir}/pgsql/extension/babelfishpg_tsql--3.3.0--3.3.1.sql
+%{_datadir}/pgsql/extension/babelfishpg_tsql--3.3.1.sql
 %{_datadir}/pgsql/extension/babelfishpg_tsql.control
 
+%files -n wiltondb-pg-hint-plan
+%{_libdir}/pgsql/pg_hint_plan.so
+%{_datadir}/pgsql/extension/pg_hint_plan--1.3.0.sql
+%{_datadir}/pgsql/extension/pg_hint_plan--1.3.0--1.3.1.sql
+%{_datadir}/pgsql/extension/pg_hint_plan--1.3.1--1.3.2.sql
+%{_datadir}/pgsql/extension/pg_hint_plan--1.3.2--1.3.3.sql
+%{_datadir}/pgsql/extension/pg_hint_plan--1.3.3--1.3.4.sql
+%{_datadir}/pgsql/extension/pg_hint_plan--1.3.5--1.3.6.sql
+%{_datadir}/pgsql/extension/pg_hint_plan--1.3.4--1.3.5.sql
+%{_datadir}/pgsql/extension/pg_hint_plan--1.3.6--1.3.7.sql
+%{_datadir}/pgsql/extension/pg_hint_plan--1.3.7--1.3.8.sql
+%{_datadir}/pgsql/extension/pg_hint_plan--1.3.8--1.3.9.sql
+%{_datadir}/pgsql/extension/pg_hint_plan--1.3.9--1.4.sql
+%{_datadir}/pgsql/extension/pg_hint_plan--1.4--1.4.1.sql
+%{_datadir}/pgsql/extension/pg_hint_plan--1.4.1--1.4.2.sql
+%{_datadir}/pgsql/extension/pg_hint_plan--1.4.2--1.5.sql
+%{_datadir}/pgsql/extension/pg_hint_plan--1.5--1.5.1.sql
+%{_datadir}/pgsql/extension/pg_hint_plan.control
+
+%files -n wiltondb-tds-fdw
+%{_libdir}/pgsql/tds_fdw.so
+%{_datadir}/pgsql/extension/tds_fdw--2.0.3.sql
+%{_datadir}/pgsql/extension/tds_fdw.control
+
 %changelog
+* Sat Mar  2 2024 WiltonDB Software <info@wiltondb.com> - 3.3_4_9-1
+- Update to wiltondb3.3-4-9
+
 * Mon Feb 12 2024 WiltonDB Software <info@wiltondb.com> - 3.3_4_6-1
 - Update to wiltondb3.3-4-6
 
