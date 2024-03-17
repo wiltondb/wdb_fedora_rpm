@@ -3,8 +3,8 @@ Name: wiltondb
 %global version_postgres_major 15
 %global version_postgres_minor 4
 %global version_wiltondb 3.3
-%global version_wiltondb_pg_release 4
-%global version_wiltondb_bbf_release 9
+%global version_wiltondb_pg_release 5
+%global version_wiltondb_bbf_release 10
 %global version_orig_tarball_package 1
 %global version_postgres %{version_postgres_epoch}:%{version_postgres_major}.%{version_postgres_minor}.wiltondb%{version_wiltondb}_%{version_wiltondb_pg_release}
 Version: %{version_wiltondb}_%{version_wiltondb_pg_release}_%{version_wiltondb_bbf_release}
@@ -16,7 +16,7 @@ Url: https://wiltondb.com/
 
 %global source0_filename wiltondb_%{version_wiltondb}-%{version_wiltondb_pg_release}-%{version_wiltondb_bbf_release}.orig.tar.xz
 %global source0_dirname wiltondb-%{version_wiltondb}-%{version_wiltondb_pg_release}-%{version_wiltondb_bbf_release}
-%global source0_sha512 1cf57e554365b689b9d0b15defc94d49fe8b0a118502c2fd59da0047a4aa48e20b28b5707ba0ff719487713f895aacf7186523563891aa08dd5696ea11099d70
+%global source0_sha512 26c270ac478ca3136d8696c07d2d8e8a6f5a569622ec018333295dde54177017134e0d2eba1731cfdeb8c98a700f3e958c1735759efebfbf104084baa3ed2ac4
 %global source0_package %{version_wiltondb}-%{version_wiltondb_pg_release}-%{version_wiltondb_bbf_release}-%{version_orig_tarball_package}~focal
 %global source0_url https://launchpad.net/~wiltondb/+archive/ubuntu/wiltondb/+sourcefiles/wiltondb/%{source0_package}/%{source0_filename}
 Source0: %{source0_filename}
@@ -48,6 +48,7 @@ Requires: babelfishpg-tds%{?_isa} = %{version}-%{release}
 Requires: babelfishpg-tsql%{?_isa} = %{version}-%{release}
 Requires: wiltondb-pg-hint-plan%{?_isa} = %{version}-%{release}
 Requires: wiltondb-tds-fdw%{?_isa} = %{version}-%{release}
+Requires: openssl
  
 %description
 WiltonDB a set of Babelfish extensions to provide the capability for PostgreSQL to understand queries from applications written for Microsoft SQL Server. WiltonDB understands the SQL Server wire-protocol and T-SQL, the Microsoft SQL Server query language.
@@ -174,7 +175,8 @@ cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--2.5.0--3.0.0.sql %{bu
 cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--3.0.0--3.1.0.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--3.1.0--3.2.0.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--3.1.0--3.3.0.sql %{buildroot}%{_datadir}/pgsql/extension/
-cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--3.3.0.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--3.3.0--3.3.1.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--3.3.1.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_common/babelfishpg_common.control %{buildroot}%{_datadir}/pgsql/extension/
 
 # tds
@@ -256,7 +258,8 @@ cp -p ./extensions/tds_fdw/tds_fdw.control %{buildroot}%{_datadir}/pgsql/extensi
 %{_datadir}/pgsql/extension/babelfishpg_common--3.0.0--3.1.0.sql
 %{_datadir}/pgsql/extension/babelfishpg_common--3.1.0--3.2.0.sql
 %{_datadir}/pgsql/extension/babelfishpg_common--3.1.0--3.3.0.sql
-%{_datadir}/pgsql/extension/babelfishpg_common--3.3.0.sql
+%{_datadir}/pgsql/extension/babelfishpg_common--3.3.0--3.3.1.sql
+%{_datadir}/pgsql/extension/babelfishpg_common--3.3.1.sql
 %{_datadir}/pgsql/extension/babelfishpg_common.control
 
 %files -n babelfishpg-tds
@@ -311,6 +314,9 @@ cp -p ./extensions/tds_fdw/tds_fdw.control %{buildroot}%{_datadir}/pgsql/extensi
 %{_datadir}/pgsql/extension/tds_fdw.control
 
 %changelog
+* Sun Mar 17 2024 WiltonDB Software <info@wiltondb.com> - 3.3_5_10-1
+- Update to wiltondb3.3-5-10
+
 * Sat Mar  2 2024 WiltonDB Software <info@wiltondb.com> - 3.3_4_9-1
 - Update to wiltondb3.3-4-9
 
