@@ -3,8 +3,8 @@ Name: wiltondb
 %global version_postgres_major 15
 %global version_postgres_minor 4
 %global version_wiltondb 3.3
-%global version_wiltondb_pg_release 5
-%global version_wiltondb_bbf_release 10
+%global version_wiltondb_pg_release 7
+%global version_wiltondb_bbf_release 12
 %global version_orig_tarball_package 1
 %global version_postgres %{version_postgres_epoch}:%{version_postgres_major}.%{version_postgres_minor}.wiltondb%{version_wiltondb}_%{version_wiltondb_pg_release}
 Version: %{version_wiltondb}_%{version_wiltondb_pg_release}_%{version_wiltondb_bbf_release}
@@ -16,7 +16,7 @@ Url: https://wiltondb.com/
 
 %global source0_filename wiltondb_%{version_wiltondb}-%{version_wiltondb_pg_release}-%{version_wiltondb_bbf_release}.orig.tar.xz
 %global source0_dirname wiltondb-%{version_wiltondb}-%{version_wiltondb_pg_release}-%{version_wiltondb_bbf_release}
-%global source0_sha512 26c270ac478ca3136d8696c07d2d8e8a6f5a569622ec018333295dde54177017134e0d2eba1731cfdeb8c98a700f3e958c1735759efebfbf104084baa3ed2ac4
+%global source0_sha512 c99521c9cc04279356f1698e9497c1aef5b89f3fd140f6a67a8fb357b26d474299b7ae2b6cdd83fdd10bdb4afc4207a5a5ec5ddd7c576abd6f10a7c48482bbe1
 %global source0_package %{version_wiltondb}-%{version_wiltondb_pg_release}-%{version_wiltondb_bbf_release}-%{version_orig_tarball_package}~focal
 %global source0_url https://launchpad.net/~wiltondb/+archive/ubuntu/wiltondb/+sourcefiles/wiltondb/%{source0_package}/%{source0_filename}
 Source0: %{source0_filename}
@@ -48,6 +48,7 @@ Requires: babelfishpg-tds%{?_isa} = %{version}-%{release}
 Requires: babelfishpg-tsql%{?_isa} = %{version}-%{release}
 Requires: wiltondb-pg-hint-plan%{?_isa} = %{version}-%{release}
 Requires: wiltondb-tds-fdw%{?_isa} = %{version}-%{release}
+Requires: wiltondb-system-stats%{?_isa} = %{version}-%{release}
 Requires: openssl
  
 %description
@@ -97,6 +98,13 @@ Requires: postgresql-contrib%{?_isa} = %{version_postgres}
 %description -n wiltondb-tds-fdw
 Foreign data wrapper that can connect to databases that use the Tabular Data Stream (TDS) protocol, such as Sybase databases and Microsoft SQL server.
 
+%package -n wiltondb-system-stats
+Summary: Extension that provides functions to access system level statistics that can be used for monitoring
+Requires: postgresql-server%{?_isa} = %{version_postgres}
+Requires: postgresql-contrib%{?_isa} = %{version_postgres}
+%description -n wiltondb-system-stats
+Extension that provides functions to access system level statistics that can be used for monitoring.
+
 %prep
 pushd %{_sourcedir}
 if [ ! -s %{SOURCE0} ] ; then
@@ -142,6 +150,11 @@ popd
 
 # tds_fdw
 pushd ./extensions/tds_fdw/
+make #%{?_smp_mflags}
+popd
+
+# system_stats
+pushd ./extensions/system_stats/
 make #%{?_smp_mflags}
 popd
 
@@ -230,6 +243,11 @@ cp -p ./extensions/tds_fdw/tds_fdw.so %{buildroot}%{_libdir}/pgsql/
 cp -p ./extensions/tds_fdw/sql/tds_fdw--2.0.3.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./extensions/tds_fdw/tds_fdw.control %{buildroot}%{_datadir}/pgsql/extension/
 
+# system_stats
+cp -p ./extensions/system_stats/system_stats.so %{buildroot}%{_libdir}/pgsql/
+cp -p ./extensions/system_stats/system_stats--2.0.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./extensions/system_stats/system_stats.control %{buildroot}%{_datadir}/pgsql/extension/
+
 %files
 %{_bindir}/wiltondb-setup
 %doc README.md
@@ -313,7 +331,15 @@ cp -p ./extensions/tds_fdw/tds_fdw.control %{buildroot}%{_datadir}/pgsql/extensi
 %{_datadir}/pgsql/extension/tds_fdw--2.0.3.sql
 %{_datadir}/pgsql/extension/tds_fdw.control
 
+%files -n wiltondb-system-stats
+%{_libdir}/pgsql/system_stats.so
+%{_datadir}/pgsql/extension/system_stats--2.0.sql
+%{_datadir}/pgsql/extension/system_stats.control
+
 %changelog
+* Mon Apr 15 2024 WiltonDB Software <info@wiltondb.com> - 3.3_7_12-1
+- Update to wiltondb3.3-7-12
+
 * Sun Mar 17 2024 WiltonDB Software <info@wiltondb.com> - 3.3_5_10-1
 - Update to wiltondb3.3-5-10
 
