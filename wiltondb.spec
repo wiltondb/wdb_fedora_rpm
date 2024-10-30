@@ -1,10 +1,11 @@
 Name: wiltondb
+Epoch: 1
 %global version_postgres_epoch 1
 %global version_postgres_major 15
 %global version_postgres_minor 4
-%global version_wiltondb 3.3
-%global version_wiltondb_pg_release 11
-%global version_wiltondb_bbf_release 15
+%global version_wiltondb 3.lts
+%global version_wiltondb_pg_release 12
+%global version_wiltondb_bbf_release 16
 %global version_orig_tarball_package 1
 %global version_postgres %{version_postgres_epoch}:%{version_postgres_major}.%{version_postgres_minor}.wiltondb%{version_wiltondb}_%{version_wiltondb_pg_release}
 Version: %{version_wiltondb}_%{version_wiltondb_pg_release}_%{version_wiltondb_bbf_release}
@@ -16,7 +17,7 @@ Url: https://wiltondb.com/
 
 %global source0_filename wiltondb_%{version_wiltondb}-%{version_wiltondb_pg_release}-%{version_wiltondb_bbf_release}.orig.tar.xz
 %global source0_dirname wiltondb-%{version_wiltondb}-%{version_wiltondb_pg_release}-%{version_wiltondb_bbf_release}
-%global source0_sha512 fc84d055de5081a490409abe0a1b999302ccbacb10a289ca3e2589c3a0dadfb1142bfb5f78e679f5b0da34d287f224b6a7416d7eef10aa7ebce9942edc4c223b
+%global source0_sha512 1f8e67fac725ce4834349e82019798e63ed69d76f758d3e1090cb4da6e935ba38e311ec3960896ed4e8cf27edfd5761a282264ea4b55bab95389b5cb5814be05
 %global source0_package %{version_wiltondb}-%{version_wiltondb_pg_release}-%{version_wiltondb_bbf_release}-%{version_orig_tarball_package}~focal
 %global source0_url https://launchpad.net/~wiltondb/+archive/ubuntu/wiltondb/+sourcefiles/wiltondb/%{source0_package}/%{source0_filename}
 Source0: %{source0_filename}
@@ -32,6 +33,7 @@ BuildRequires: gcc
 BuildRequires: gcc-c++
 BuildRequires: java
 BuildRequires: libxml2-devel
+BuildRequires: libuuid-devel
 BuildRequires: make
 BuildRequires: perl-lib
 BuildRequires: perl-libs
@@ -49,6 +51,7 @@ Requires: babelfishpg-tsql%{?_isa} = %{version}-%{release}
 Requires: wiltondb-pg-hint-plan%{?_isa} = %{version}-%{release}
 Requires: wiltondb-tds-fdw%{?_isa} = %{version}-%{release}
 Requires: wiltondb-system-stats%{?_isa} = %{version}-%{release}
+Requires: wiltondb-pgagent%{?_isa} = %{version}-%{release}
 Requires: openssl
  
 %description
@@ -105,6 +108,13 @@ Requires: postgresql-contrib%{?_isa} = %{version_postgres}
 %description -n wiltondb-system-stats
 Extension that provides functions to access system level statistics that can be used for monitoring.
 
+%package -n wiltondb-pgagent
+Summary: Extension that provides a scheduler
+Requires: postgresql-server%{?_isa} = %{version_postgres}
+Requires: postgresql-contrib%{?_isa} = %{version_postgres}
+%description -n wiltondb-pgagent
+Extension that provides a scheduler.
+
 %prep
 pushd %{_sourcedir}
 if [ ! -s %{SOURCE0} ] ; then
@@ -158,6 +168,16 @@ pushd ./extensions/system_stats/
 make #%{?_smp_mflags}
 popd
 
+# pgagent
+pushd ./extensions/pgagent/
+mkdir build
+pushd build
+cmake .. -DCMAKE_INSTALL_PREFIX=`pwd`/dist
+make #%{?_smp_mflags}
+make install
+popd
+popd
+
 %install
 mkdir -p %{buildroot}%{_bindir}
 mkdir -p %{buildroot}%{_libdir}/pgsql
@@ -191,7 +211,8 @@ cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--3.1.0--3.3.0.sql %{bu
 cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--3.3.0--3.3.1.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--3.3.1--3.3.2.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--3.3.2--3.3.3.sql %{buildroot}%{_datadir}/pgsql/extension/
-cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--3.3.3.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--3.3.4--3.3.5.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./contrib/babelfishpg_common/sql/babelfishpg_common--3.3.5.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_common/babelfishpg_common.control %{buildroot}%{_datadir}/pgsql/extension/
 
 # tds
@@ -218,7 +239,8 @@ cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--3.0.0--3.1.0.sql %{buildr
 cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--3.1.0--3.2.0.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--3.2.0--3.3.0.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--3.3.0--3.3.1.sql %{buildroot}%{_datadir}/pgsql/extension/
-cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--3.3.1.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--3.3.1--3.3.2.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp -p ./contrib/babelfishpg_tsql/sql/babelfishpg_tsql--3.3.2.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./contrib/babelfishpg_tsql/babelfishpg_tsql.control %{buildroot}%{_datadir}/pgsql/extension/
 
 # pg_hint_plan
@@ -249,6 +271,10 @@ cp -p ./extensions/tds_fdw/tds_fdw.control %{buildroot}%{_datadir}/pgsql/extensi
 cp -p ./extensions/system_stats/system_stats.so %{buildroot}%{_libdir}/pgsql/
 cp -p ./extensions/system_stats/system_stats--2.0.sql %{buildroot}%{_datadir}/pgsql/extension/
 cp -p ./extensions/system_stats/system_stats.control %{buildroot}%{_datadir}/pgsql/extension/
+
+# pgagent
+cp -p ./extensions/pgagent/build/dist/pgagent--4.2.sql %{buildroot}%{_datadir}/pgsql/extension/
+cp ./extensions/pgagent/build/dist/pgagent.control %{buildroot}%{_datadir}/pgsql/extension/
 
 %files
 %{_bindir}/wiltondb-setup
@@ -281,7 +307,8 @@ cp -p ./extensions/system_stats/system_stats.control %{buildroot}%{_datadir}/pgs
 %{_datadir}/pgsql/extension/babelfishpg_common--3.3.0--3.3.1.sql
 %{_datadir}/pgsql/extension/babelfishpg_common--3.3.1--3.3.2.sql
 %{_datadir}/pgsql/extension/babelfishpg_common--3.3.2--3.3.3.sql
-%{_datadir}/pgsql/extension/babelfishpg_common--3.3.3.sql
+%{_datadir}/pgsql/extension/babelfishpg_common--3.3.4--3.3.5.sql
+%{_datadir}/pgsql/extension/babelfishpg_common--3.3.5.sql
 %{_datadir}/pgsql/extension/babelfishpg_common.control
 
 %files -n babelfishpg-tds
@@ -308,7 +335,8 @@ cp -p ./extensions/system_stats/system_stats.control %{buildroot}%{_datadir}/pgs
 %{_datadir}/pgsql/extension/babelfishpg_tsql--3.1.0--3.2.0.sql
 %{_datadir}/pgsql/extension/babelfishpg_tsql--3.2.0--3.3.0.sql
 %{_datadir}/pgsql/extension/babelfishpg_tsql--3.3.0--3.3.1.sql
-%{_datadir}/pgsql/extension/babelfishpg_tsql--3.3.1.sql
+%{_datadir}/pgsql/extension/babelfishpg_tsql--3.3.1--3.3.2.sql
+%{_datadir}/pgsql/extension/babelfishpg_tsql--3.3.2.sql
 %{_datadir}/pgsql/extension/babelfishpg_tsql.control
 
 %files -n wiltondb-pg-hint-plan
@@ -340,7 +368,15 @@ cp -p ./extensions/system_stats/system_stats.control %{buildroot}%{_datadir}/pgs
 %{_datadir}/pgsql/extension/system_stats--2.0.sql
 %{_datadir}/pgsql/extension/system_stats.control
 
+%files -n wiltondb-pgagent
+%{_datadir}/pgsql/extension/pgagent--4.2.sql
+%{_datadir}/pgsql/extension/pgagent.control
+
 %changelog
+* Wed Oct 30 2024 WiltonDB Software <info@wiltondb.com> - 3.lts_12_16-1
+- Update to wiltondb3.lts-12-16
+- Add the Epoch number to resolve version ordering
+
 * Sun Jul 21 2024 WiltonDB Software <info@wiltondb.com> - 3.3_11_15-1
 - Update to wiltondb3.3-11-15
 
