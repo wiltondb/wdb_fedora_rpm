@@ -1,6 +1,6 @@
 Name: wiltondb
 Epoch: 1
-%global version_postgres_epoch 1
+%global version_postgres_epoch 2
 %global version_postgres_major 15
 %global version_postgres_minor 4
 %global version_wiltondb 3.lts
@@ -9,7 +9,7 @@ Epoch: 1
 %global version_orig_tarball_package 1
 %global version_postgres %{version_postgres_epoch}:%{version_postgres_major}.%{version_postgres_minor}.wiltondb%{version_wiltondb}_%{version_wiltondb_pg_release}
 Version: %{version_wiltondb}_%{version_wiltondb_pg_release}_%{version_wiltondb_bbf_release}
-Release: 1%{?dist}
+Release: 2%{?dist}
 
 Summary: Wilton DB build of Babelfish extensions for PostgreSQL
 License: PostgreSQL
@@ -44,14 +44,14 @@ BuildRequires: wget
 BuildRequires: postgresql-private-devel = %{version_postgres}
 BuildRequires: postgresql-server-devel = %{version_postgres}
 
-Requires: babelfishpg-money%{?_isa} = %{version}-%{release}
-Requires: babelfishpg-common%{?_isa} = %{version}-%{release}
-Requires: babelfishpg-tds%{?_isa} = %{version}-%{release}
-Requires: babelfishpg-tsql%{?_isa} = %{version}-%{release}
-Requires: wiltondb-pg-hint-plan%{?_isa} = %{version}-%{release}
-Requires: wiltondb-tds-fdw%{?_isa} = %{version}-%{release}
-Requires: wiltondb-system-stats%{?_isa} = %{version}-%{release}
-Requires: wiltondb-pgagent%{?_isa} = %{version}-%{release}
+Requires: babelfishpg-money%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: babelfishpg-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: babelfishpg-tds%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: babelfishpg-tsql%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: wiltondb-pg-hint-plan%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: wiltondb-tds-fdw%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: wiltondb-system-stats%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: wiltondb-pgagent%{?_isa} = %{epoch}:%{version}-%{release}
 Requires: openssl
  
 %description
@@ -68,7 +68,7 @@ This is a variation of the opensource fixeddecimal extension. FixedDecimal is a 
 Summary: Supports the various datatypes in MSSQL
 Requires: postgresql-server%{?_isa} = %{version_postgres}
 Requires: postgresql-contrib%{?_isa} = %{version_postgres}
-Requires: babelfishpg-money%{?_isa} = %{version}-%{release}
+Requires: babelfishpg-money%{?_isa} = %{epoch}:%{version}-%{release}
 %description -n babelfishpg-common
 Supports NUMERIC, VARBINARY and other datatypes.
 
@@ -83,7 +83,7 @@ Supports Tabular Data Stream (TDS) protocol.
 Summary: Supports the T-SQL language
 Requires: postgresql-server%{?_isa} = %{version_postgres}
 Requires: postgresql-contrib%{?_isa} = %{version_postgres}
-Requires: babelfishpg-common%{?_isa} = %{version}-%{release}
+Requires: babelfishpg-common%{?_isa} = %{epoch}:%{version}-%{release}
 %description -n babelfishpg-tsql
 Supports Transact-SQL (T-SQL) language.
 
@@ -373,6 +373,9 @@ cp ./extensions/pgagent/build/dist/pgagent.control %{buildroot}%{_datadir}/pgsql
 %{_datadir}/pgsql/extension/pgagent.control
 
 %changelog
+* Sun Nov  3 2024 WiltonDB Software <info@wiltondb.com> - 3.lts_12_16-2
+- Dependency versions fix
+
 * Wed Oct 30 2024 WiltonDB Software <info@wiltondb.com> - 3.lts_12_16-1
 - Update to wiltondb3.lts-12-16
 - Add the Epoch number to resolve version ordering
